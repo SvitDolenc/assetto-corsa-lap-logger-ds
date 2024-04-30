@@ -14,7 +14,7 @@ APP_NAME = "Lap Logger"
 # Because the script is run from the context of the main .exe we need to point to provide a relative path to this script.
 LOG_DIR = "apps/python/laplogger/logs"
 
-LOGGER_PATH = "python3 loggerUploader.py" #CHANGE WITH loggerUploader.exe
+LOGGER_PATH = "python3 loggerUploader.py" #CHANGE WITH loggerUploader.exe or python3 loggerUploader.py
 
 
 # -----------------------------------------
