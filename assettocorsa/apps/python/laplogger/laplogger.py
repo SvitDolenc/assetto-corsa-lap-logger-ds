@@ -72,10 +72,10 @@ def acMain(ac_version):
 
 
 def acUpdate(deltaT):
-	
+
 	# if (not active):
 		# return
-	
+
 	updateState()
 	refreshUI()
 
@@ -149,7 +149,7 @@ def refreshUI():
 # -----------------------------------------
 
 def openLog():
-	
+
 	# Create a log name based on the curent vehicle-track combination
 	LOG_NAME = "{}-{}-{}.acl".format(ac.getCarName(0), ac.getTrackName(0), ac.getTrackConfiguration(0))
 
@@ -160,7 +160,7 @@ def openLog():
 		os.mkdir(LOG_DIR)
 
 	shouldInit = not os.path.exists("{}/{}".format(LOG_DIR, LOG_NAME))
-		
+
 	global logFile
 	logFile = open("{}/{}".format(LOG_DIR, LOG_NAME), "a+")
 
