@@ -1,6 +1,0 @@
-car: bmw_z4_gt3
-track: ks_nurburgring
-config: layout_gp_b
-
-{'time': 135776, 'invalidated': False, 'lap': 1, 'splits': [47536, 46472, 41768]}
-{'time': 125238, 'invalidated': False, 'lap': 2, 'splits': [39054, 44658, 41526]}
