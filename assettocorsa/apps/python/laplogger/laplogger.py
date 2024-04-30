@@ -69,6 +69,10 @@ def acMain(ac_version):
 	lblCurrentTime = ac.addLabel(appWindow, "")
 	ac.setPosition(lblCurrentTime, 3, 120)
 
+	global user
+	user = ac.addInputText(appWindow, "")
+	ac.setPosition(user, 3, 150)
+
 	openLog()
 
 	return APP_NAME
@@ -181,12 +185,13 @@ def initLog():
 def writeLogEntry():
 	'''Writes a new log entry to the log using the current state information.'''
 	global logFile
-
+	global user
 	lapData = {
 		"lap" : lapCount,
 		"time" : ac.getCarState(0, acsys.CS.LastLap),
 		"invalidated" : lastLapInvalidated,
-		"splits" : ac.getLastSplits(0)
+		"splits" : ac.getLastSplits(0),
+		"user": user
 	}
 
 	runLogUploader(lapData)
@@ -197,7 +202,7 @@ def writeLogEntry():
 def runLogUploader(lapData):
     args = LOGGER_PATH
     name = ac.getCarName(0)+"-"+ac.getTrackName(0)
-    args += " -name {} -lap {} -time {} -invalidated {} -splits {}".format(name ,lapData["lap"], lapData["time"], lapData["invalidated"], lapData["splits"])
+    args += " -name {} -lap {} -time {} -invalidated {} -user {}".format(name ,lapData["lap"], lapData["time"], lapData["invalidated"], lapData["user"])
     subprocess.call(args, shell=True)
 
 def closeLog():

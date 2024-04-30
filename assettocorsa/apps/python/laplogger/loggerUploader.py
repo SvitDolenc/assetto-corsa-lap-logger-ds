@@ -19,7 +19,6 @@ class GoogleSheetDemo:
     def open_sheet(self, sheet_name):
         worksheet_list = self.sheet.worksheets()
         for worksheet in worksheet_list:
-            print(worksheet)
             if worksheet.title == sheet_name:
                 self.woorksheet = worksheet
                 return
@@ -71,7 +70,15 @@ demo = GoogleSheetDemo()
 
 def main(argv, arc):
     demo.open_sheet(argv[2])
-    row_data = [argv[4], argv[6], argv[8]]
+    name = argv[2]
+    lap = argv[4]
+    time = argv[6]
+    invalidated = argv[8]
+    user = "unknown"
+    if(len(argv) > 10):
+        user = argv[10]
+
+    row_data = [lap, time, invalidated, user]
     demo.add_row(row_data)
 
 if __name__ == '__main__':
