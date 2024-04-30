@@ -1,8 +1,9 @@
 import sys
-import ac
-import acsys
-
+#import ac
+#import acsys
 import os
+
+import subprocess
 
 # -----------------------------------------
 # Constants
@@ -12,6 +13,8 @@ import os
 APP_NAME = "Lap Logger"
 # Because the script is run from the context of the main .exe we need to point to provide a relative path to this script.
 LOG_DIR = "apps/python/laplogger/logs"
+
+LOGGER_PATH = "python3 loggerUploader.py"
 
 
 # -----------------------------------------
@@ -186,7 +189,18 @@ def writeLogEntry():
 		"splits" : ac.getLastSplits(0)
 	}
 
+	runLogUploader(lapData)
+	# Run logger uploader
+	#
 	logFile.write("{}\n".format(lapData))
+
+def runLogUploader(lapData):
+    args = LOGGER_PATH
+    #name = ac.getCarName(0)+"-"+ac.getTrackName(0)
+    name = "test"
+    args += " -name {} -lap {} -time {} -invalidated {} -splits {}".format(name ,lapData["lap"], lapData["time"], lapData["invalidated"], lapData["splits"])
+    FNULL = open(os.devnull, 'w')
+    subprocess.call(args, stdout=FNULL, stderr=FNULL, shell=True)
 
 def closeLog():
 	global logFile

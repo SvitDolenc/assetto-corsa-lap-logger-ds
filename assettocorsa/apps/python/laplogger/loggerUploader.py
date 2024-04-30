@@ -5,6 +5,7 @@ import json
 import os
 import glob
 import time
+import sys
 
 class GoogleSheetDemo:
     def __init__(self):
@@ -22,15 +23,17 @@ class GoogleSheetDemo:
             if worksheet.title == sheet_name:
                 self.woorksheet = worksheet
                 return
-        self.woorksheet = self.sheet.add_worksheet(title=sheet_name, rows="100", cols="20")
+        self.woorksheet = self.sheet.add_worksheet(title=sheet_name, rows="1000", cols="10")
+        self.woorksheet.insert_row(["Lap","Time(ms)","Valid","User"], 1)
 
     def get_row(self, row_number):
         return self.woorksheet.row_values(row_number)
 
     def add_row(self, row_data):
         self.woorksheet.insert_row(row_data, 2)
-        print("The row has been added")
 
+
+    #NOT IN USE
     def parse_and_add_rows(self, data_string):
         data_lines = data_string.split('\n')
         car = None
@@ -62,29 +65,14 @@ class GoogleSheetDemo:
                 self.add_row(row_data)
 
 
-# Example usage of the class
+#main read args
 demo = GoogleSheetDemo()
-#read from file
 
 
-# Set the directory you want to start from
-path = './logs'
+def main(argv, arc):
+    demo.open_sheet(argv[2])
+    row_data = [argv[4], argv[6], argv[8]]
+    demo.add_row(row_data)
 
-
-while True:
-    # Use glob to match all files in the directory
-    for file_path in glob.glob(os.path.join(path, '*')):
-        # Make sure it's a file
-        if os.path.isfile(file_path):
-            # Open and read the file
-            with open(file_path, 'r') as file:
-                content = file.read()
-                print(f'Content of {file_path}:')
-                demo.parse_and_add_rows(content)
-                # Process content here ...
-
-            # Delete the file after reading
-            #os.remove(file_path)
-            #print(f'{file_path} has been deleted.')
-
-    time.sleep(10)
+if __name__ == '__main__':
+    main(sys.argv, len(sys.argv))
