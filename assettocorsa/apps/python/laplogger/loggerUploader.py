@@ -28,7 +28,7 @@ class GoogleSheetDemo:
         return self.woorksheet.row_values(row_number)
 
     def add_row(self, row_data):
-        self.woorksheet.insert_row(row_data, 1)
+        self.woorksheet.insert_row(row_data, 2)
         print("The row has been added")
 
     def parse_and_add_rows(self, data_string):
