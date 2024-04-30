@@ -68,7 +68,7 @@ demo = GoogleSheetDemo()
 
 
 # Set the directory you want to start from
-path = './laps'
+path = './logs'
 
 
 while True:
