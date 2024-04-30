@@ -84,7 +84,7 @@ while True:
                 # Process content here ...
 
             # Delete the file after reading
-            os.remove(file_path)
-            print(f'{file_path} has been deleted.')
+            #os.remove(file_path)
+            #print(f'{file_path} has been deleted.')
 
     time.sleep(10)
