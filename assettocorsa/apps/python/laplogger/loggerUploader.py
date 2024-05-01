@@ -23,7 +23,7 @@ class GoogleSheetDemo:
                 self.woorksheet = worksheet
                 return
         self.woorksheet = self.sheet.add_worksheet(title=sheet_name, rows="1000", cols="10")
-        self.woorksheet.insert_row(["Lap","Time(ms)","Valid","User"], 1)
+        self.woorksheet.insert_row(["Time(ms)","User"], 1)
 
     def get_row(self, row_number):
         return self.woorksheet.row_values(row_number)
@@ -64,22 +64,48 @@ class GoogleSheetDemo:
                 self.add_row(row_data)
 
 
+
+def process_json(file_path):
+    with open(file_path, 'r') as file:
+        for line in file:
+            try:
+                json_data = json.loads(line)
+                time = json_data['time']
+                user = json_data['user']
+
+                row_data = [time, user]
+                # Process each line of JSON data here
+                #print(row_data)
+                demo.add_row(row_data)
+                
+            except json.JSONDecodeError:
+                # Handle invalid JSON data if necessary
+                pass
 #main read args
-demo = GoogleSheetDemo()
+
+directory = './laplogs'
+
+while True:
+    demo = GoogleSheetDemo()
+    files = os.listdir(directory)
+    # Iterate over each file
+    for file_name in files:
+        file_path = os.path.join(directory, file_name)
+        if os.path.isfile(file_path):
+            # Process JSON data in the file
+            print('Processing file:', file_name)
+            demo.open_sheet(file_name)
+            process_json(file_path)
+            try:
+                os.remove(file_path)
+            except:
+                print("Error while deleting file : ", file_path)
+    time.sleep(10)
 
 
-def main(argv, arc):
-    demo.open_sheet(argv[2])
-    name = argv[2]
-    lap = argv[4]
-    time = argv[6]
-    invalidated = argv[8]
-    user = "unknown"
-    if(len(argv) > 10):
-        user = argv[10]
 
-    row_data = [lap, time, invalidated, user]
-    demo.add_row(row_data)
 
-if __name__ == '__main__':
-    main(sys.argv, len(sys.argv))
+# Function to process JSON data line by line
+
+
+# Get list of files in the directory

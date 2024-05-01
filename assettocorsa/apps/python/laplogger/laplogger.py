@@ -2,9 +2,7 @@ import sys
 import ac
 import acsys
 import os
-
-import subprocess
-
+import json
 # -----------------------------------------
 # Constants
 # -----------------------------------------
@@ -14,7 +12,8 @@ APP_NAME = "Lap Logger"
 # Because the script is run from the context of the main .exe we need to point to provide a relative path to this script.
 LOG_DIR = "apps/python/laplogger/logs"
 
-LOGGER_PATH = "python3 loggerUploader.py" #CHANGE WITH loggerUploader.exe or python3 loggerUploader.py
+LAP_LOG_DIR = "apps/python/laplogger/laplogs"
+
 
 
 # -----------------------------------------
@@ -37,6 +36,8 @@ lastLap = 0
 
 lastLapInvalidated = False
 
+username = ""
+
 # -----------------------------------------
 # Asseto Corsa Events
 # -----------------------------------------
@@ -47,7 +48,7 @@ def acMain(ac_version):
 
 	global appWindow
 	appWindow = ac.newApp(APP_NAME)
-	ac.setSize(appWindow, 400, 200)
+	ac.setSize(appWindow, 400, 250)
 
 	# TODO Get this working
 	#ac.addOnAppActivatedListener(appWindow, onAppActivated)
@@ -69,9 +70,13 @@ def acMain(ac_version):
 	lblCurrentTime = ac.addLabel(appWindow, "")
 	ac.setPosition(lblCurrentTime, 3, 120)
 
-	global user
-	user = ac.addInputText(appWindow, "")
-	ac.setPosition(user, 3, 150)
+
+	global button
+	button = ac.addButton(appWindow, "Submit best lap")
+	ac.setPosition(button, 3, 150)
+	ac.setSize(button, 150, 50)
+
+	ac.addOnClickedListener(button, sendLapData)
 
 	openLog()
 
@@ -174,6 +179,16 @@ def openLog():
 	if shouldInit:
 		initLog()
 
+def openLapLog():
+	LAP_LOG_NAME = "{}-{}-{}.json".format(ac.getCarName(0), ac.getTrackName(0), ac.getTrackConfiguration(0))
+	
+	if not os.path.exists(LAP_LOG_DIR):
+			os.mkdir(LAP_LOG_DIR)
+
+	global LaplogFile
+	LaplogFile = open("{}/{}".format(LAP_LOG_DIR, LAP_LOG_NAME), "a+")
+
+
 def initLog():
 	'''Initialises the log file with important information regarding this log.'''
 	carNameLine =		"car: {}".format(ac.getCarName(0))
@@ -191,19 +206,25 @@ def writeLogEntry():
 		"time" : ac.getCarState(0, acsys.CS.LastLap),
 		"invalidated" : lastLapInvalidated,
 		"splits" : ac.getLastSplits(0),
-		"user": user
+		"user": ac.getValue(user)
 	}
 
-	runLogUploader(lapData)
+	#runLogUploader(lapData)
 	# Run logger uploader
 	#
 	logFile.write("{}\n".format(lapData))
 
-def runLogUploader(lapData):
-    args = LOGGER_PATH
-    name = ac.getCarName(0)+"-"+ac.getTrackName(0)
-    args += " -name {} -lap {} -time {} -invalidated {} -user {}".format(name ,lapData["lap"], lapData["time"], lapData["invalidated"], lapData["user"])
-    subprocess.call(args, shell=True)
+
+def sendLapData(one,two):
+    global bestLap, LaplogFile, bestLap
+    openLapLog()
+    lapData = {
+		"lap" : lapCount,
+		"time" : bestLap,
+		"invalidated" : lastLapInvalidated,
+		"user": ac.getValue(user)
+	}
+    LaplogFile.writelines(json.dumps(lapData) + "\n")
 
 def closeLog():
 	global logFile
