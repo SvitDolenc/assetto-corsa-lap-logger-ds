@@ -3,6 +3,7 @@ import ac
 import acsys
 import os
 import json
+import urllib.request
 # -----------------------------------------
 # Constants
 # -----------------------------------------
@@ -14,6 +15,7 @@ LOG_DIR = "apps/python/laplogger/logs"
 
 LAP_LOG_DIR = "apps/python/laplogger/laplogs"
 
+API_URL = "https://webhook.site/b844bb26-1c29-4d39-8c5c-c3a1527af193"
 
 
 # -----------------------------------------
@@ -77,6 +79,10 @@ def acMain(ac_version):
 	ac.setSize(button, 150, 50)
 
 	ac.addOnClickedListener(button, sendLapData)
+
+	global submitedLap
+	submitedLap = ac.addLabel(appWindow, "")
+	ac.setPosition(submitedLap, 3, 200)
 
 	openLog()
 
@@ -206,7 +212,6 @@ def writeLogEntry():
 		"time" : ac.getCarState(0, acsys.CS.LastLap),
 		"invalidated" : lastLapInvalidated,
 		"splits" : ac.getLastSplits(0),
-		"user": ac.getValue(user)
 	}
 
 	#runLogUploader(lapData)
@@ -217,14 +222,29 @@ def writeLogEntry():
 
 def sendLapData(one,two):
     global bestLap, LaplogFile, bestLap
-    openLapLog()
+    #openLapLog()
     lapData = {
+		"car" : ac.getCarName(0),
+		"track" : ac.getTrackName(0),
+		"config" : ac.getTrackConfiguration(0),
 		"lap" : lapCount,
-		"time" : bestLap,
-		"invalidated" : lastLapInvalidated,
-		"user": ac.getValue(user)
+		"bestLapTime" : bestLap,
 	}
-    LaplogFile.writelines(json.dumps(lapData) + "\n")
+    send(lapData)
+
+def send(item):
+		global submitedLap, bestLap
+		request = urllib.request.Request(
+            url=API_URL,
+            data=json.dumps(item).encode('ascii'),
+            method='POST',
+            headers={"Content-Type": "application/json"}
+        )
+		with urllib.request.urlopen(request) as transaction:
+			if transaction.status != 200:
+				log("Failed to send lap data to server", "ERROR")
+			ac.setText(submitedLap, "Time submited: {}".format(getFormattedLapTime(bestLap)))
+
 
 def closeLog():
 	global logFile
